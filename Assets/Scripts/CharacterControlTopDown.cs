@@ -4,7 +4,8 @@ using System.Collections;
 public class CharacterControlTopDown : MonoBehaviour {
 
 	private Rigidbody2D rigidbody2d;
-	public float speed = 6;
+	public float maxSpeed = 8.0f;
+	public float moveForce = 365.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -16,25 +17,32 @@ public class CharacterControlTopDown : MonoBehaviour {
 		float h = Input.GetAxis("Horizontal");
 		float v = Input.GetAxis("Vertical");
 
+		Debug.Log("Horizontal: " + h);
+		Debug.Log("Vertical: " + v);
+
 		// Horizontal
-		if(h > 0){
-			Vector2 hForce = new Vector2(speed, 0.0f);
-			rigidbody2d.AddForce(hForce);
-		} else if (h < 0){
-			Vector2 hForce = new Vector2(-speed, 0.0f);
-			rigidbody2d.AddForce(hForce);			
+		if((h * rigidbody2d.velocity.x) < maxSpeed){
+			Debug.Log("FORCE: " + Vector2.right * h * moveForce);
+			rigidbody2d.AddForce(Vector2.right * h * moveForce);
+		} 
+
+		if(Mathf.Abs(rigidbody2d.velocity.x) > maxSpeed){
+			Debug.Log("Max speed achieved");
+			rigidbody2d.velocity = new Vector2(Mathf.Sign(rigidbody2d.velocity.x) * maxSpeed, rigidbody2d.velocity.y);
 		}
 
 		// Vertical
-		if(v > 0){
-			Vector2 vForce = new Vector2(0.0f, speed);
-			rigidbody2d.AddForce(vForce);
-		} else if (v < 0){
-			Vector2 vForce = new Vector2(0.0f, -speed);
-			rigidbody2d.AddForce(vForce);			
+		if(v * rigidbody2d.velocity.y < maxSpeed){
+			Debug.Log("FORCE: " + Vector2.right * h * moveForce);
+			rigidbody2d.AddForce(Vector2.up * v * moveForce);
+		} 
+
+		if(Mathf.Abs(rigidbody2d.velocity.y) > maxSpeed){
+			Debug.Log("Max speed achieved");
+			rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, Mathf.Sign(rigidbody2d.velocity.y) * maxSpeed);
 		}
-		
-	Debug.Log("Velocity: " + rigidbody2d.velocity);
+
+	//Debug.Log("Velocity: " + rigidbody2d.velocity);
 
 	}
 }
