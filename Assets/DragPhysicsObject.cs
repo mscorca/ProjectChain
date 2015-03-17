@@ -15,9 +15,8 @@ public class DragPhysicsObject : MonoBehaviour {
  
  
      void OnMouseDown(){
-	     //I'm reactivating the SpringJoint2D component each time I'm clicking on my object becouse I'm disabling it after I'm releasing the mouse click so it will fly in the direction i was moving my mouse
-	     spring.enabled = true;
-	 
+	    //I'm reactivating the SpringJoint2D component each time I'm clicking on my object becouse I'm disabling it after I'm releasing the mouse click so it will fly in the direction i was moving my mouse
+	    spring.enabled = true;
      }
  
  
