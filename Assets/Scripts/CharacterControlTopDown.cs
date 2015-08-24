@@ -9,7 +9,10 @@ public class CharacterControlTopDown : MonoBehaviour {
 	public float maxAngularSpeed = 5.0f;
 	public float moveForce = 365.0f;
 	public float spinForce = 10.0f;
-	private float spinDirectionMultiplier = 1;
+
+	private float rollMult = 2.5f;
+	//private float spinDirectionMultiplier = 1;
+	private bool rollWait = false;
 
 
 	private Vector3 prevMousePos;
@@ -20,11 +23,10 @@ public class CharacterControlTopDown : MonoBehaviour {
 	private Quaternion currentRot;
 
 
-
 	// Use this for initialization
 	void Start () {
 		rigidbody2d = GetComponent<Rigidbody2D>();
-		mousePos = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		//mousePos = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		// transform = GetComponent<Transform>();
 	}
 	
@@ -32,31 +34,32 @@ public class CharacterControlTopDown : MonoBehaviour {
 	void Update () {
 		move();
 
-		prevMousePos = mousePos;
-		Vector3 drawPrev = Camera.main.transform.position - mousePos;
-		mousePos = Camera.main.transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		//prevMousePos = mousePos;
+		//Vector3 drawPrev = Camera.main.transform.position - mousePos;
+		//mousePos = Camera.main.transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-		Debug.Log("Pre: " + prevMousePos);
-		Debug.Log("Cur: " + mousePos);
+		// Debug.Log("Pre: " + prevMousePos);
+		// Debug.Log("Cur: " + mousePos);
 
+		//transform.LookAt(mousePos);
 
 		//previousRot = currentRot;
 		//currentRot = Quaternion.LookRotation(transform.position - mousePos, Vector3.forward);
 
-		Debug.DrawLine(Camera.main.transform.position, drawPrev, Color.blue);
-		Debug.DrawLine(Camera.main.transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition), Color.red);
+		// Debug.DrawLine(Camera.main.transform.position, drawPrev, Color.blue);
+		// Debug.DrawLine(Camera.main.transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition), Color.red);
 		
-		float angle = Vector3.Angle(prevMousePos, mousePos);
-		prevCrossProduct = crossProduct;
-		crossProduct = Vector3.Cross(prevMousePos, mousePos);
-		if(crossProduct.y < 0 && !(prevCrossProduct.y < 0)){
-			spinDirectionMultiplier = -spinDirectionMultiplier;
-			Debug.Log("Angle: " + -angle);
-		} else {
-			Debug.Log("Angle: " + angle);
-		}
+		// float angle = Vector3.Angle(prevMousePos, mousePos);
+		// prevCrossProduct = crossProduct;
+		// crossProduct = Vector3.Cross(prevMousePos, mousePos);
+		// if(crossProduct.y < 0 && !(prevCrossProduct.y < 0)){
+		// 	spinDirectionMultiplier = -spinDirectionMultiplier;
+		// 	Debug.Log("Angle: " + -angle);
+		// } else {
+		// 	Debug.Log("Angle: " + angle);
+		// }
 
-		rigidbody2d.AddTorque(angle * spinDirectionMultiplier * spinForce);
+		// rigidbody2d.AddTorque(angle * spinDirectionMultiplier * spinForce);
 
 	}
 
@@ -64,8 +67,8 @@ public class CharacterControlTopDown : MonoBehaviour {
 		float h = Input.GetAxis("Horizontal");
 		float v = Input.GetAxis("Vertical");
 
-		//Debug.Log("Horizontal: " + h);
-		//Debug.Log("Vertical: " + v);
+		Debug.Log("Horizontal: " + h);
+		Debug.Log("Vertical: " + v);
 
 		// Horizontal
 		if((h * rigidbody2d.velocity.x) < maxSpeed){
@@ -89,5 +92,20 @@ public class CharacterControlTopDown : MonoBehaviour {
 			rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, Mathf.Sign(rigidbody2d.velocity.y) * maxSpeed);
 		}
 
+		if(!rollWait && Input.GetKeyDown("space")){
+			rollWait = true;
+			moveForce *= rollMult;
+			maxSpeed *= rollMult;
+			StartCoroutine(resetRoll());
+		}
+
 	}
+
+	IEnumerator resetRoll(){
+			yield return new WaitForSeconds(.25f);
+			rollWait = false;
+			moveForce /= rollMult;
+			maxSpeed /= rollMult;
+	}
+
 }
